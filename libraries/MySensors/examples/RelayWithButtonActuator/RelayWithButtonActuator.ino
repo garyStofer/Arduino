@@ -70,7 +70,7 @@ void setup()
   pinMode(RELAY_PIN, OUTPUT);   
       
   // Set relay to last known state (using eeprom storage) 
-  state = gw.loadState(CHILD_ID);
+  state =0; // gw.loadState(CHILD_ID);
   digitalWrite(RELAY_PIN, state?RELAY_ON:RELAY_OFF);
 }
 
@@ -84,7 +84,10 @@ void loop()
   debouncer.update();
   // Get the update value
   int value = debouncer.read();
-  if (value != oldValue && value==0) {
+  if (value != oldValue && value==0) // edge to 0
+  {
+      Serial.println("Sending the toggled state to controller");
+  
       gw.send(msg.set(state?false:true), true); // Send new state and request ack back
   }
   oldValue = value;
@@ -100,14 +103,15 @@ void incomingMessage(const MyMessage &message) {
      // Change relay state
      state = message.getBool();
      digitalWrite(RELAY_PIN, state?RELAY_ON:RELAY_OFF);
+    
      // Store state in eeprom
-     gw.saveState(CHILD_ID, state);
+     // gw.saveState(CHILD_ID, state);
     
      // Write some debug info
      Serial.print("Incoming change for sensor:");
      Serial.print(message.sensor);
      Serial.print(", New status: ");
-     Serial.println(message.getBool());
+     Serial.println(state);
    } 
 }
 

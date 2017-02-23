@@ -20,13 +20,13 @@
  *
  * DESCRIPTION
  * The ArduinoGateway prints data received from sensors on the serial link. 
- * The gateway accepts input on seral which will be sent out on radio network.
+ * The gateway accepts input on serial which will be sent out on radio network.
  *
  * The GW code is designed for Arduino Nano 328p / 16MHz
  *
  * Wire connections (OPTIONAL):
  * - Inclusion button should be connected between digital pin 3 and GND  
- * - RX/TX/ERR leds need to be connected between +5V (anode) and digital pin 6/5/4 with resistor 270-330R in a series
+ * - RX/TX/ERR LEDs need to be connected between +5V (anode) and digital pin 6/5/4 with resistor 270-330R in a series
  *
  * LEDs (OPTIONAL):
  * - RX (green) - blink fast on radio message recieved. In inclusion mode will blink fast only on presentation recieved
@@ -36,6 +36,7 @@
  */
 
 #define NO_PORTB_PINCHANGES  
+#define DEBUG
 
 #include <MySigningNone.h>
 #include <MyTransportRFM69.h>
@@ -90,7 +91,8 @@ void output(const char *fmt, ... ) {
   
 void setup()  
 { 
-  gw.begin(incomingMessage, 0, true, 0);
+ 
+  gw.begin(incomingMessage, 0, true, 0); // The node id == 0 designates this node as a gateway -- only one node can be a GW 
 
   setupGateway(RADIO_RX_LED_PIN, RADIO_TX_LED_PIN, RADIO_ERROR_LED_PIN, INCLUSION_MODE_PIN, INCLUSION_MODE_TIME, output);  
 

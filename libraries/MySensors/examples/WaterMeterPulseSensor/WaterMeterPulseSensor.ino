@@ -58,7 +58,7 @@ double ppl = ((double)PULSE_FACTOR)/1000;        // Pulses per liter
 
 volatile unsigned long pulseCount = 0;   
 volatile unsigned long lastBlink = 0;
-volatile double flow = 0;  
+volatile double flow = 0;  						// flow in Liter/min
 boolean pcReceived = false;
 unsigned long oldPulseCount = 0;
 unsigned long newBlink = 0;   
@@ -67,86 +67,6 @@ double volume =0;
 double oldvolume =0;
 unsigned long lastSend =0;
 unsigned long lastPulse =0;
-
-void setup()  
-{  
-  gw.begin(incomingMessage); 
-
-  // Send the sketch version information to the gateway and Controller
-  gw.sendSketchInfo("Water Meter", "1.2");
-
-  // Register this device as Waterflow sensor
-  gw.present(CHILD_ID, S_WATER);       
-
-  pulseCount = oldPulseCount = 0;
-
-  // Fetch last known pulse count value from gw
-  gw.request(CHILD_ID, V_VAR1);
-
-  lastSend = lastPulse = millis();
-
-  attachInterrupt(SENSOR_INTERRUPT, onPulse, RISING);
-}
-
-
-void loop()     
-{ 
-  gw.process();
-  unsigned long currentTime = millis();
-	
-    // Only send values at a maximum frequency or woken up from sleep
-  if (SLEEP_MODE || (currentTime - lastSend > SEND_FREQUENCY))
-  {
-    lastSend=currentTime;
-    
-    if (!pcReceived) {
-      //Last Pulsecount not yet received from controller, request it again
-      gw.request(CHILD_ID, V_VAR1);
-      return;
-    }
-
-    if (!SLEEP_MODE && flow != oldflow) {
-      oldflow = flow;
-
-      Serial.print("l/min:");
-      Serial.println(flow);
-
-      // Check that we dont get unresonable large flow value. 
-      // could hapen when long wraps or false interrupt triggered
-      if (flow<((unsigned long)MAX_FLOW)) {
-        gw.send(flowMsg.set(flow, 2));                   // Send flow value to gw
-      }  
-    }
-  
-    // No Pulse count received in 2min 
-    if(currentTime - lastPulse > 120000){
-      flow = 0;
-    } 
-
-    // Pulse count has changed
-    if (pulseCount != oldPulseCount) {
-      oldPulseCount = pulseCount;
-
-      Serial.print("pulsecount:");
-      Serial.println(pulseCount);
-
-      gw.send(lastCounterMsg.set(pulseCount));                  // Send  pulsecount value to gw in VAR1
-
-      double volume = ((double)pulseCount/((double)PULSE_FACTOR));     
-      if (volume != oldvolume) {
-        oldvolume = volume;
-
-        Serial.print("volume:");
-        Serial.println(volume, 3);
-        
-        gw.send(volumeMsg.set(volume, 3));               // Send volume value to gw
-      } 
-    }
-  }
-  if (SLEEP_MODE) {
-    gw.sleep(SEND_FREQUENCY);
-  }
-}
 
 void incomingMessage(const MyMessage &message) {
   if (message.type==V_VAR1) {
@@ -168,14 +88,100 @@ void onPulse()
     if (interval!=0)
     {
       lastPulse = millis();
+ 
       if (interval<500000L) {
         // Sometimes we get interrupt on RISING,  500000 = 0.5sek debounce ( max 120 l/min)
         return;   
       }
       flow = (60000000.0 /interval) / ppl;
-    }
     lastBlink = newBlink;
+    }
   }
   pulseCount++; 
 }
+void setup()  
+{  
+  gw.begin(incomingMessage); 
+
+  // Send the sketch version information to the gateway and Controller
+  gw.sendSketchInfo("Water Meter", "1.2");
+
+  // Register this device as Waterflow sensor
+  gw.present(CHILD_ID, S_WATER);       
+
+  pulseCount = oldPulseCount = 0;
+
+  // Fetch last known pulse count value from gw
+  gw.request(CHILD_ID, V_VAR1);
+
+  lastSend = lastPulse = millis();
+  Serial.print( "Water meter "); Serial.println( LIBRARY_VERSION);
+
+  attachInterrupt(SENSOR_INTERRUPT, onPulse, RISING);
+}
+
+
+void loop()     
+{ 
+  gw.process();
+  unsigned long currentTime = millis();
+	
+    // Only send values at a maximum frequency or woken up from sleep
+  if (SLEEP_MODE || (currentTime - lastSend > SEND_FREQUENCY))
+  {
+    lastSend=currentTime;
+    
+    if (!pcReceived) {
+      //Last Pulsecount not yet received from controller, request it again
+      gw.request(CHILD_ID, V_VAR1);
+      return;
+    }
+
+    if (!SLEEP_MODE && flow != oldflow) 
+	{
+      oldflow = flow;
+
+      Serial.print("l/min:");
+      Serial.println(flow);
+
+      // Check that we dont get unresonable large flow value. 
+      // could hapen when long wraps or false interrupt triggered
+      if (flow<((unsigned long)MAX_FLOW)) {
+        gw.send(flowMsg.set(flow, 2));                   // Send flow value to gw
+      }  
+    }
+  
+    // No Pulse count received in 2min 
+    if(currentTime - lastPulse > 120000){
+      flow = 0;
+    } 
+
+    // Pulse count has changed
+    if (pulseCount != oldPulseCount) 
+	{
+      oldPulseCount = pulseCount;
+
+      Serial.print("pulsecount:");
+      Serial.println(pulseCount);
+
+      gw.send(lastCounterMsg.set(pulseCount));                  // Send  pulsecount value to gw in VAR1
+
+      double volume = ((double)pulseCount/((double)PULSE_FACTOR));     
+	  
+      if (volume != oldvolume) {
+        oldvolume = volume;
+
+        Serial.print("volume:");
+        Serial.println(volume, 3);
+        
+        gw.send(volumeMsg.set(volume, 3));               // Send volume value to gw
+      } 
+    }
+  }
+  if (SLEEP_MODE) {
+    gw.sleep(SEND_FREQUENCY);
+  }
+}
+
+
 

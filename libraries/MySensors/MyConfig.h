@@ -24,7 +24,7 @@
 
 // Enable debug flag for debug prints. This will add a lot to the size of the final sketch but good
 // to see what is actually is happening when developing
-#define DEBUG
+//#define DEBUG
 
 // Serial output baud rate (for debug prints and serial gateway)
 #define BAUD_RATE 115200
@@ -81,8 +81,11 @@
 /**********************************
 *  NRF24L01 Driver Defaults
 ***********************************/
-#define RF24_CE_PIN		   9
-#define RF24_CS_PIN		   10
+// MySensors online examples defaults
+#define RF24_CE_PIN		   9		// default 
+#define RF24_CS_PIN		   10		// default
+
+
 #define RF24_PA_LEVEL 	   RF24_PA_MAX
 #define RF24_PA_LEVEL_GW   RF24_PA_LOW
 // RF channel for the sensor net, 0-127
@@ -90,7 +93,9 @@
 //RF24_250KBPS for 250kbs, RF24_1MBPS for 1Mbps, or RF24_2MBPS for 2Mbps
 #define RF24_DATARATE 	   RF24_250KBPS
 // This is also act as base value for sensor nodeId addresses. Change this (or channel) if you have more than one sensor network.
-#define RF24_BASE_RADIO_ID ((uint64_t)0xA8A8E1FC00LL)
+//#define RF24_BASE_RADIO_ID ((uint64_t)0xA8A8E1FC00LL)
+#define RF24_BASE_RADIO_ID 	   ((uint64_t)0x2a330f7100LL) // This is the PANid, acts as base value for sensor nodeId addresses. Change this (or channel) if you have more than one sensor network.
+//NOTE: only bits 39:8 are configurable, Least significant Byte is used for the pipes
 
 // Enable SOFTSPI for NRF24L01 when using the W5100 Ethernet module
 //#define SOFTSPI

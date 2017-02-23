@@ -121,16 +121,23 @@ inline void MyHwATMega328::sleep(unsigned long ms) {
 	// Let serial prints finish (debug, log etc)
 	Serial.flush();
 	pinIntTrigger = 0;
-	while (!pinIntTrigger && ms >= 8000) { powerDown(SLEEP_8S); ms -= 8000; }
-	if (!pinIntTrigger && ms >= 4000)    { powerDown(SLEEP_4S); ms -= 4000; }
-	if (!pinIntTrigger && ms >= 2000)    { powerDown(SLEEP_2S); ms -= 2000; }
-	if (!pinIntTrigger && ms >= 1000)    { powerDown(SLEEP_1S); ms -= 1000; }
-	if (!pinIntTrigger && ms >= 500)     { powerDown(SLEEP_500MS); ms -= 500; }
-	if (!pinIntTrigger && ms >= 250)     { powerDown(SLEEP_250MS); ms -= 250; }
-	if (!pinIntTrigger && ms >= 125)     { powerDown(SLEEP_120MS); ms -= 120; }
-	if (!pinIntTrigger && ms >= 64)      { powerDown(SLEEP_60MS); ms -= 60; }
-	if (!pinIntTrigger && ms >= 32)      { powerDown(SLEEP_30MS); ms -= 30; }
-	if (!pinIntTrigger && ms >= 16)      { powerDown(SLEEP_15Ms); ms -= 15; }
+	if (ms == 0) 
+	{
+		powerDown(SLEEP_FOREVER);
+	}
+	else
+	{
+		while (!pinIntTrigger && ms >= 8000) { powerDown(SLEEP_8S); ms -= 8000; }
+		if (!pinIntTrigger && ms >= 4000)    { powerDown(SLEEP_4S); ms -= 4000; }
+		if (!pinIntTrigger && ms >= 2000)    { powerDown(SLEEP_2S); ms -= 2000; }
+		if (!pinIntTrigger && ms >= 1000)    { powerDown(SLEEP_1S); ms -= 1000; }
+		if (!pinIntTrigger && ms >= 500)     { powerDown(SLEEP_500MS); ms -= 500; }
+		if (!pinIntTrigger && ms >= 250)     { powerDown(SLEEP_250MS); ms -= 250; }
+		if (!pinIntTrigger && ms >= 125)     { powerDown(SLEEP_120MS); ms -= 120; }
+		if (!pinIntTrigger && ms >= 64)      { powerDown(SLEEP_60MS); ms -= 60; }
+		if (!pinIntTrigger && ms >= 32)      { powerDown(SLEEP_30MS); ms -= 30; }
+		if (!pinIntTrigger && ms >= 16)      { powerDown(SLEEP_15Ms); ms -= 15; }
+	}
 }
 
 bool MyHwATMega328::sleep(uint8_t interrupt, uint8_t mode, unsigned long ms) {
