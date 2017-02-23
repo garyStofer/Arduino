@@ -71,7 +71,7 @@
 #define MY_ATSHA204_PIN 17 // A3 - pin where ATSHA204 is attached
 
 // MySigningAtsha204Soft default settings
-#define MY_RANDOMSEED_PIN 7 // A7 - Pin used for random generation (do not connect anything to this)
+#define MY_RANDOMSEED_PIN 7 // GS -- Changed from default A7 (used for battery voltage in my HW) - Pin used for random generation (do not connect anything to this)
 
 // Key to use for HMAC calculation in MySigningAtsha204Soft (32 bytes)
 #define MY_HMAC_KEY 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,\
@@ -87,8 +87,9 @@
 
 
 #define RF24_PA_LEVEL 	   RF24_PA_MAX
-#define RF24_PA_LEVEL_GW   RF24_PA_LOW
+#define RF24_PA_LEVEL_GW   RF24_PA_HIGH
 // RF channel for the sensor net, 0-127
+// F0= 2400 + RF_CH [MHz] e.g. channel 107 at 2.507GHz
 #define RF24_CHANNEL	   76
 //RF24_250KBPS for 250kbs, RF24_1MBPS for 1Mbps, or RF24_2MBPS for 2Mbps
 #define RF24_DATARATE 	   RF24_250KBPS

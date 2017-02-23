@@ -27,9 +27,9 @@
 #ifdef ARDUINO
 
 
-uint8_t pinRx = 8; // Rx led pin
-uint8_t pinTx = 9; // Tx led pin
-uint8_t pinEr = 7; // Err led pin
+uint8_t pinRx = 6; // Rx led pin
+uint8_t pinTx = 5; // Tx led pin
+uint8_t pinEr = 4; // Err led pin
 uint8_t inclusionTime = 1; // Number of minutes inclusion mode is enabled
 uint8_t pinInclusion =  3; // Input pin that should trigger inclusion mode
 
@@ -65,9 +65,10 @@ void setupGateway(uint8_t _rx, uint8_t _tx, uint8_t _er, uint8_t _inc, uint8_t _
   pinInclusion = _inc;
   inclusionTime = _incTime;
   
-  countRx = 0;
-  countTx = 0;
-  countErr = 0;
+  // for an initial led indictaion on startup
+  countRx = 1;
+  countTx = 2;
+  countErr = 3;
 
 
   // Setup led pins
