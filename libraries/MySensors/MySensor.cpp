@@ -382,9 +382,14 @@ void MySensor::sendBatteryLevel(uint8_t value, bool enableAck) {
 }
 
 void MySensor::present(uint8_t childSensorId, uint8_t sensorType, bool enableAck) {
+	
 	sendRoute(build(msg, nc.nodeId, GATEWAY_ADDRESS, childSensorId, C_PRESENTATION, sensorType, enableAck).set(LIBRARY_VERSION));
 }
 
+void MySensor::present(uint8_t childSensorId, uint8_t sensorType, bool enableAck, const char * name) {
+
+	sendRoute(build(msg, nc.nodeId, GATEWAY_ADDRESS, childSensorId, C_PRESENTATION, sensorType, enableAck).set(name));
+}
 void MySensor::sendSketchInfo(const char *name, const char *version, bool enableAck) {
 	if (name != NULL) {
 		sendRoute(build(msg, nc.nodeId, GATEWAY_ADDRESS, NODE_SENSOR_ID, C_INTERNAL, I_SKETCH_NAME, enableAck).set(name));
